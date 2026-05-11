@@ -24,7 +24,7 @@ class OrderItemRepository implements OrderItemRepositoryInterface
 
     public function findByOrderId(int $orderId): Collection
     {
-        return $this->model->where('order_id', $orderId)->get();
+        return $this->model->with('product')->where('order_id', $orderId)->get();
     }
 
     public function deleteByOrderId(int $orderId): void
