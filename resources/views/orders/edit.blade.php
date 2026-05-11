@@ -1,19 +1,54 @@
 @extends('layouts.app')
-@section('title', 'Edit Order')
+
+@section('title', 'Edit Order ' . $order->order_number)
+
 @section('content')
+
 <h4 class="mb-4">Edit Order {{ $order->order_number }}</h4>
-<form method="POST" action="/orders/{{ $order->id }}/edit">
+
+<form method="POST" action="{{ route('orders.update', $order->id) }}">
     @csrf
-    <div class="card mb-3"><div class="card-body">
-        <div class="mb-3"><label>Customer</label>
-            <select name="customer_id" class="form-select">
-            @foreach($customers as $c)<option value="{{ $c->id }}" {{ $c->id==$order->customer_id?'selected':'' }}>{{ $c->name }}</option>@endforeach
-            </select></div>
-        <div class="mb-3"><label>Shipping Address</label><textarea name="shipping_address" class="form-control" rows="2">{{ $order->shipping_address }}</textarea></div>
-        <div class="mb-3"><label>Due Date</label><input type="date" name="due_date" class="form-control" value="{{ $order->due_date }}"></div>
-        <div class="mb-3"><label>Notes</label><textarea name="notes" class="form-control" rows="3">{{ $order->notes }}</textarea></div>
-    </div></div>
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-    <a href="/orders/{{ $order->id }}" class="btn btn-outline-secondary">Cancel</a>
+    @method('PUT')
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Customer</label>
+                <select name="customer_id" class="form-select @error('customer_id') is-invalid @enderror">
+                    @foreach($customers as $customer)
+                        <option value="{{ $customer->id }}" @selected($customer->id === $order->customer_id)>
+                            {{ $customer->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('customer_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Shipping Address</label>
+                <textarea name="shipping_address" class="form-control @error('shipping_address') is-invalid @enderror"
+                    rows="2">{{ old('shipping_address', $order->shipping_address) }}</textarea>
+                @error('shipping_address')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Due Date</label>
+                <input type="date" name="due_date" class="form-control"
+                    value="{{ old('due_date', $order->due_date?->format('Y-m-d')) }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                <textarea name="notes" class="form-control"
+                    rows="3">{{ old('notes', $order->notes) }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
 </form>
+
 @endsection
