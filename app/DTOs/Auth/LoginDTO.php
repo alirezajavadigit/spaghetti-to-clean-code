@@ -7,8 +7,8 @@ use App\Http\Requests\Auth\LoginRequest;
 final readonly class LoginDTO
 {
     public function __construct(
-        public string $email,
-        public string $password,
+        public readonly string $email,
+        public readonly string $password,
     ) {}
 
     public static function fromRequest(LoginRequest $request): self
