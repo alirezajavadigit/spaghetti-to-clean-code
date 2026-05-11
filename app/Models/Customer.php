@@ -1,10 +1,31 @@
 <?php
+
 namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-class Customer extends Model {
-    protected $guarded = [];
-    public function orders() { return $this->hasMany(Order::class); }
-    public function getTotalSpentAttribute() {
-        return \DB::table('orders')->where('customer_id',$this->id)->where('status','!=',5)->sum('total');
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Customer extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'phone',
+        'address',
+    ];
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function getTotalSpentAttribute(): float
+    {
+        return $this->orders()
+            ->where('status', '!=', Order::STATUS_CANCELLED)
+            ->sum('total');
     }
 }
