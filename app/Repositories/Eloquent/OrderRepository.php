@@ -59,4 +59,9 @@ class OrderRepository implements OrderRepositoryInterface
             ->where('status', 1)
             ->exists();
     }
+
+    public function existsByCustomerId(int $customerId): bool
+    {
+        return $this->model->where('customer_id', $customerId)->exists();
+    }
 }

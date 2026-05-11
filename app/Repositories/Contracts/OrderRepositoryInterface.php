@@ -15,4 +15,5 @@ interface OrderRepositoryInterface
     public function delete(int $id): bool;
     public function search(string $query, string|null $status): Collection;
     public function hasPendingForCustomer(int $customerId): bool;
+    public function existsByCustomerId(int $customerId): bool;
 }
