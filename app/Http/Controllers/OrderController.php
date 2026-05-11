@@ -57,12 +57,14 @@ class OrderController extends Controller
             return redirect()->route('orders.index')->with('error', __('orders.not_found'));
         }
 
-        $items    = $this->orderItemRepository->findByOrderId($id);
-        $customer = $this->customerRepository->findById($order->customer_id);
+        $order->load('user');
 
-        return view('orders.show', compact('order', 'items', 'customer'));
+        $items     = $this->orderItemRepository->findByOrderId($id);
+        $customer  = $this->customerRepository->findById($order->customer_id);
+        $createdBy = $order->user?->name ?? 'Unknown';
+
+        return view('orders.show', compact('order', 'items', 'customer', 'createdBy'));
     }
-
     public function edit(int $id): View|RedirectResponse
     {
         $order = $this->orderRepository->findById($id);
