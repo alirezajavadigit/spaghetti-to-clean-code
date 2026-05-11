@@ -1,9 +1,39 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
-class OrderItem extends Model {
-    protected $guarded = [];
-    public function product() { return $this->belongsTo(Product::class); }
-    public function order() { return $this->belongsTo(Order::class); }
-    public function getLineTotalAttribute() { return $this->price * $this->quantity; }
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class OrderItem extends Model
+{
+    protected $fillable = [
+        'order_id',
+        'product_id',
+        'quantity',
+        'price',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'quantity' => 'integer',
+            'price'    => 'float',
+        ];
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function getLineTotalAttribute(): float
+    {
+        return $this->price * $this->quantity;
+    }
 }
