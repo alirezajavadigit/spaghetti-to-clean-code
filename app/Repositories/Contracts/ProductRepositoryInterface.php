@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 interface ProductRepositoryInterface
 {
     public function paginate(int $perPage = 20): LengthAwarePaginator;
+    public function lowStock(int $threshold = 10): Collection;
     public function search(string $query): Collection;
     public function findById(int $id): ?Product;
     public function findActiveWithStock(): Collection;
