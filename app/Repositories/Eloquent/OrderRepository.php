@@ -6,7 +6,6 @@ use App\Models\Order;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Override;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -15,6 +14,15 @@ class OrderRepository implements OrderRepositoryInterface
     public function paginate(int $perPage = 20): LengthAwarePaginator
     {
         return $this->model->latest()->paginate($perPage);
+    }
+
+    public function recent(int $limit = 5): Collection
+    {
+        return $this->model
+            ->with('customer')
+            ->latest()
+            ->limit($limit)
+            ->get();
     }
 
     public function findById(int $id): ?Order
