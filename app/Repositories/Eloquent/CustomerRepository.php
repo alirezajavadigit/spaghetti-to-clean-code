@@ -47,4 +47,9 @@ class CustomerRepository implements CustomerRepositoryInterface
     {
         return $this->model->findOrFail($id)->delete();
     }
+
+    public function count(): int
+    {
+        return $this->model->count();
+    }
 }

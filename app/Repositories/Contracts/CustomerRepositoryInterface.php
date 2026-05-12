@@ -15,4 +15,5 @@ interface CustomerRepositoryInterface
     public function create(array $data): Customer;
     public function update(int $id, array $data): Customer;
     public function delete(int $id): bool;
+    public function count(): int;
 }
