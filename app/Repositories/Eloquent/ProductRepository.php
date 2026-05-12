@@ -16,6 +16,15 @@ class ProductRepository implements ProductRepositoryInterface
         return $this->model->latest()->paginate($perPage);
     }
 
+    public function lowStock(int $threshold = 10): Collection
+    {
+        return $this->model
+            ->where('stock', '<', $threshold)
+            ->where('active', true)
+            ->orderBy('stock')
+            ->get();
+    }
+    
     public function search(string $query): Collection
     {
         return $this->model
