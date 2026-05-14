@@ -1,6 +1,6 @@
 # Spaghetti to Clean Code
 
-[![CI](https://github.com/alirezajavadigit/spaghetti-to-clean-code/actions/workflows/ci.yml/badge.svg)](https://github.com/alirezajavadigit/spaghetti-to-clean-code/actions/workflows/ci.yml)
+[![CI](https://github.com/alirezajavadigit/spaghetti-to-clean-code/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alirezajavadigit/spaghetti-to-clean-code/actions/workflows/ci.yml)
 
 A Laravel refactoring project. Started as a working but unmaintainable order management system, ended up as something I'd actually want to work with long-term.
 
@@ -96,7 +96,7 @@ It wasn't broken. It passed requests and returned responses. But it was the kind
 
 **Model casts instead of manual transformation.** The `User` model now has `'password' => 'hashed'` as a cast. `Order` has status constants and accessors for `status_label` and `status_color`, which eliminates the repeated if/elseif chains that were in almost every view.
 
-**Performance fix in reporting.** The dashboard and report controllers no longer load full collections into memory. A single `selectRaw` with `CASE WHEN` handles all the aggregations in one database round trip.
+**Performance fix in reporting.** The dashboard and report controllers no longer load full collections into memory. A single `selectRaw` with `CASE WHEN` handles all the aggregations in one database round trip. Report summaries are cached for 10 minutes.
 
 ### What the new structure gives you
 
@@ -162,8 +162,8 @@ php artisan serve
 
 Default accounts after seeding:
 
-| Email | Password | Role |
-|-------|----------|------|
+| Email             | Password    | Role  |
+| ----------------- | ----------- | ----- |
 | admin@example.com | password123 | admin |
 | staff@example.com | password123 | staff |
 
@@ -173,21 +173,29 @@ Default accounts after seeding:
 
 The entire refactor is committed in logical, reviewable branches following Git Flow:
 
-| Branch | What it contains |
-|--------|-----------------|
-| `feature/auth-repository-pattern` | Auth refactor with repository, service, DTO |
-| `feature/order-product-refactor` | Orders and products, full architecture |
-| `feature/customer-report-refactor` | Customers, reports, routing overhaul |
-| `feature/dashboard-refactor` | Dashboard service layer |
-| `refactor/views` | All Blade views cleaned up |
-| `refactor/database-seeders` | Seeders split and cleaned up |
-| `fix/order-controller-bugs` | Bug fixes discovered during refactoring |
-| `feature/feature-tests` | Factories and full feature test suite |
-| `feature/unit-tests` | Unit tests for services, models, DTOs |
-| `fix/failing-feature-tests` | Fixes found while writing feature tests |
-| `fix/failing-unit-tests` | DTO base request refactor, auth service fix |
-| `chore/github-ci` | GitHub Actions CI pipeline |
-| `chore/docker` | Dockerfile for local development |
+| Branch                               | What it contains                                  |
+| ------------------------------------ | ------------------------------------------------- |
+| `feature/auth-repository-pattern`    | Auth refactor with repository, service, DTO       |
+| `feature/order-product-refactor`     | Orders and products, full architecture            |
+| `feature/customer-report-refactor`   | Customers, reports, routing overhaul              |
+| `feature/dashboard-refactor`         | Dashboard service layer                           |
+| `refactor/views`                     | All Blade views cleaned up                        |
+| `refactor/customer-dashboard-views`  | Customer and dashboard views                      |
+| `refactor/database-seeders`          | Seeders split and cleaned up                      |
+| `refactor/dto-base-request`          | DTOs decoupled from FormRequest                   |
+| `fix/order-controller-bugs`          | Bug fixes discovered during refactoring           |
+| `fix/failing-feature-tests`          | Route conflict, admin check, email validation fix |
+| `fix/failing-unit-tests`             | Auth service logout, DTO test fixes               |
+| `fix/report-db-driver-compatibility` | MySQL/SQLite date format fix                      |
+| `feature/feature-tests`              | Factories and full feature test suite             |
+| `feature/unit-tests`                 | Unit tests for services, models, DTOs             |
+| `perf/query-optimizations`           | Repository and service query improvements         |
+| `feat/performance-indexes`           | Database indexes migration                        |
+| `chore/github-ci`                    | GitHub Actions CI pipeline                        |
+| `chore/docker`                       | Dockerfile for local development                  |
+| `chore/docker-compose`               | Docker Compose and entrypoint script              |
+| `chore/cleanup`                      | Remove example tests, normalize permissions       |
+| `docs/readme`                        | README updates                                    |
 
 If you want to see the before state, the original code is on the initial commits before any feature branches were merged.
 
