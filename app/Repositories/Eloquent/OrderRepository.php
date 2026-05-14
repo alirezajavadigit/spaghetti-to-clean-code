@@ -13,13 +13,16 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function paginate(int $perPage = 20): LengthAwarePaginator
     {
-        return $this->model->latest()->paginate($perPage);
+        return $this->model
+            ->with('customer:id,name')
+            ->latest()
+            ->paginate($perPage);
     }
 
     public function recent(int $limit = 5): Collection
     {
         return $this->model
-            ->with('customer')
+            ->with('customer:id,name')
             ->latest()
             ->limit($limit)
             ->get();
@@ -50,13 +53,14 @@ class OrderRepository implements OrderRepositoryInterface
     public function search(string $query, string|null $status): Collection
     {
         return $this->model
-            ->with('customer')
+            ->join('customers', 'orders.customer_id', '=', 'customers.id')
+            ->select('orders.*')
             ->where(function ($q) use ($query) {
-                $q->whereHas('customer', fn($q) => $q->where('name', 'LIKE', "%{$query}%"))
-                    ->orWhere('order_number', 'LIKE', "%{$query}%");
+                $q->where('customers.name', 'LIKE', "%{$query}%")
+                    ->orWhere('orders.order_number', 'LIKE', "%{$query}%");
             })
-            ->when($status !== null && $status !== '', fn($q) => $q->where('status', $status))
-            ->latest()
+            ->when($status !== null && $status !== '', fn($q) => $q->where('orders.status', $status))
+            ->latest('orders.created_at')
             ->get();
     }
 
