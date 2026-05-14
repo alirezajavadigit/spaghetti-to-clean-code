@@ -21,11 +21,4 @@ class Customer extends Model
     {
         return $this->hasMany(Order::class);
     }
-
-    public function getTotalSpentAttribute(): float
-    {
-        return $this->orders()
-            ->where('status', '!=', Order::STATUS_CANCELLED)
-            ->sum('total');
-    }
 }
