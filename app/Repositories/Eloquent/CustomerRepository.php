@@ -18,7 +18,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function all(): Collection
     {
-        return $this->model->all();
+        return $this->model->select('id', 'name')->orderBy('name')->get();
     }
 
     public function findById(int $id): ?Customer
