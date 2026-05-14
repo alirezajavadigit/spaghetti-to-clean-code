@@ -1,38 +1,34 @@
 <?php
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () { return redirect('/dashboard'); });
-Route::get('/login', [AuthController::class, 'index']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/logout', [AuthController::class, 'logout']);
-Route::get('/dashboard', [DashboardController::class, 'index']);
-Route::get('/orders/search', [OrderController::class, 'search']);
-Route::get('/orders', [OrderController::class, 'index']);
-Route::get('/orders/create', [OrderController::class, 'create']);
-Route::post('/orders/save', [OrderController::class, 'store']);
-Route::get('/orders/{id}', [OrderController::class, 'show']);
-Route::get('/orders/{id}/edit', [OrderController::class, 'edit']);
-Route::post('/orders/{id}/edit', [OrderController::class, 'update']);
-Route::get('/orders/{id}/delete', [OrderController::class, 'destroy']);
-Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus']);
-Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/new', [ProductController::class, 'create']);
-Route::post('/products/new', [ProductController::class, 'store']);
-Route::get('/products/{id}/edit', [ProductController::class, 'edit']);
-Route::post('/products/{id}/edit', [ProductController::class, 'update']);
-Route::get('/products/{id}/delete', [ProductController::class, 'destroy']);
-Route::get('/customers', [CustomerController::class, 'index']);
-Route::get('/customers/new', [CustomerController::class, 'create']);
-Route::post('/customers/new', [CustomerController::class, 'store']);
-Route::get('/customers/{id}', [CustomerController::class, 'show']);
-Route::get('/customers/{id}/edit', [CustomerController::class, 'edit']);
-Route::post('/customers/{id}/edit', [CustomerController::class, 'update']);
-Route::get('/customers/{id}/delete', [CustomerController::class, 'destroy']);
-Route::get('/reports', [ReportController::class, 'index']);
-Route::get('/reports/export', [ReportController::class, 'export']);
+Route::get('/', fn() => redirect()->route('dashboard'));
+
+Route::middleware('guest')->group(function () {
+    Route::get('login', [AuthController::class, 'index'])->name('login');
+    Route::post('login', [AuthController::class, 'login'])->name('login.store');
+});
+
+Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+Route::middleware('auth')->group(function () {
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('orders/search', [OrderController::class, 'search'])->name('orders.search');
+    Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
+    Route::resource('orders', OrderController::class);
+
+    Route::resource('products', ProductController::class);
+    Route::resource('customers', CustomerController::class);
+
+    Route::middleware('can:admin')->group(function () {
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
+    });
+});
