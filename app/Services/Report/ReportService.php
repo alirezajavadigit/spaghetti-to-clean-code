@@ -50,7 +50,13 @@ class ReportService
 
     public function revenueByMonth(string $from, string $to): Collection
     {
-        return Order::selectRaw("strftime('%Y-%m', created_at) as month, SUM(total) as revenue, COUNT(id) as orders")
+        $driver = DB::getDriverName();
+
+        $monthExpression = $driver === 'sqlite'
+            ? "strftime('%Y-%m', created_at)"
+            : "DATE_FORMAT(created_at, '%Y-%m')";
+
+        return Order::selectRaw("{$monthExpression} as month, SUM(total) as revenue, COUNT(id) as orders")
             ->where('status', '!=', Order::STATUS_CANCELLED)
             ->whereBetween(DB::raw('DATE(created_at)'), [$from, $to])
             ->groupBy('month')
