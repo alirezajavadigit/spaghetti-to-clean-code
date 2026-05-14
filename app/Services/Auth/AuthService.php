@@ -3,13 +3,13 @@
 namespace App\Services\Auth;
 
 use App\DTOs\Auth\LoginDTO;
-use App\Repositories\Eloquent\UserRepository;
+use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
-    public function __construct(protected UserRepository $userRepository) {}
+    public function __construct(private readonly UserRepositoryInterface $userRepository) {}
     public function attempt(LoginDTO $dto): bool
     {
         $user = $this->userRepository->findByEmail($dto->email);
@@ -22,7 +22,5 @@ class AuthService
     public function logout(): void
     {
         Auth::logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
     }
 }
