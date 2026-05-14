@@ -2,9 +2,9 @@
 
 namespace App\DTOs\Order;
 
-use App\Http\Requests\Order\StoreOrderRequest;
+use Illuminate\Http\Request;
 
-final readonly class StoreOrderDTO
+class StoreOrderDTO
 {
     public function __construct(
         public readonly int $customerId,
@@ -15,30 +15,15 @@ final readonly class StoreOrderDTO
         public readonly mixed $attachment,
     ) {}
 
-    public static function fromRequest(StoreOrderRequest $request): self
+    public static function fromRequest(Request $request): self
     {
         return new self(
-            customerId: $request->validated('customer_id'),
-            shippingAddress: $request->validated('shipping_address'),
-            products: $request->validated('products', []),
-            notes: $request->validated('notes'),
-            dueDate: $request->validated('due_date'),
+            customerId: $request->input('customer_id'),
+            shippingAddress: $request->input('shipping_address'),
+            products: $request->input('products', []),
+            notes: $request->input('notes'),
+            dueDate: $request->input('due_date'),
             attachment: $request->file('attachment'),
         );
-    }
-
-    /**
-     * Convert DTO to array format.
-     */
-    public function toArray(): array
-    {
-        return [
-            'customer_id' => $this->customerId,
-            'shipping_address' => $this->shippingAddress,
-            'products' => $this->products,
-            'notes' => $this->notes,
-            'due_date' => $this->dueDate,
-            'attachment' => $this->attachment,
-        ];
     }
 }
