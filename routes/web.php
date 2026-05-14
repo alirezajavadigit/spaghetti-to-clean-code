@@ -20,12 +20,12 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middle
 Route::middleware('auth')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('products', ProductController::class);
-    Route::resource('customers', CustomerController::class);
-
-    Route::resource('orders', OrderController::class);
     Route::get('orders/search', [OrderController::class, 'search'])->name('orders.search');
     Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
+    Route::resource('orders', OrderController::class);
+
+    Route::resource('products', ProductController::class);
+    Route::resource('customers', CustomerController::class);
 
     Route::middleware('can:admin')->group(function () {
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');

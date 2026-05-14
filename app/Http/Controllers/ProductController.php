@@ -50,6 +50,10 @@ class ProductController extends Controller
 
     public function destroy(int $id): RedirectResponse
     {
+        if (auth()->user()->role !== 'admin') {
+            return redirect()->route('products.index')->with('error', __('products.unauthorized'));
+        }
+
         try {
             $this->productService->delete($id);
             return redirect()->route('products.index')->with('success', __('products.deleted'));
