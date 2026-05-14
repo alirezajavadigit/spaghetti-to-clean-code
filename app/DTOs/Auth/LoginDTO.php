@@ -2,7 +2,7 @@
 
 namespace App\DTOs\Auth;
 
-use App\Http\Requests\Auth\LoginRequest;
+use Illuminate\Http\Request;
 
 final readonly class LoginDTO
 {
@@ -11,22 +11,11 @@ final readonly class LoginDTO
         public readonly string $password,
     ) {}
 
-    public static function fromRequest(LoginRequest $request): self
+    public static function fromRequest(Request $request): self
     {
         return new self(
-            email: $request->validated('email'),
-            password: $request->validated('password'),
+            email: $request->input('email'),
+            password: $request->input('password'),
         );
-    }
-
-    /**
-     * Convert DTO to authentication credentials array.
-     */
-    public function toArray(): array
-    {
-        return [
-            'email' => $this->email,
-            'password' => $this->password,
-        ];
     }
 }

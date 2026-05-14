@@ -2,9 +2,9 @@
 
 namespace App\DTOs\Order;
 
-use App\Http\Requests\Order\UpdateOrderRequest;
+use Illuminate\Http\Request;
 
-final readonly class UpdateOrderDTO
+class UpdateOrderDTO
 {
     public function __construct(
         public readonly int $customerId,
@@ -13,23 +13,13 @@ final readonly class UpdateOrderDTO
         public readonly string|null $dueDate,
     ) {}
 
-    public static function fromRequest(UpdateOrderRequest $request): self
+    public static function fromRequest(Request $request): self
     {
         return new self(
-            customerId: $request->validated('customer_id'),
-            shippingAddress: $request->validated('shipping_address'),
-            notes: $request->validated('notes'),
-            dueDate: $request->validated('due_date'),
+            customerId: $request->input('customer_id'),
+            shippingAddress: $request->input('shipping_address'),
+            notes: $request->input('notes'),
+            dueDate: $request->input('due_date'),
         );
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'customer_id' => $this->customerId,
-            'shipping_address' => $this->shippingAddress,
-            'notes' => $this->notes,
-            'due_date' => $this->dueDate,
-        ];
     }
 }
